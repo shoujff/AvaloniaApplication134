@@ -20,6 +20,10 @@
 			<Setter Property="IsVisible" Value="{Binding StatusVisible}"/>
             <Setter Property="Text" Value="{Binding Status}"/>
         </Style>
+        <Style Selector="RadioButton">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
 
     </Window.Styles>
   <Grid ColumnDefinitions="*,*,*"
@@ -105,6 +109,25 @@
                   <TextBox Text="{Binding NewPhoneNumber,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            Watermark="Phone number"
                             Margin="0,0,0,10"/>
+
+                  <TextBlock Text="Select group"
+                             FontSize="14"
+                             FontWeight="SemiBold"
+                             Margin="0,10,0,5"/>
+                 <StackPanel Orientation="Horizontal"
+                                Margin="0,0,0,10">
+                           <RadioButton Content="Family"
+                                        GroupName="ContactGroup"
+                                        IsChecked="False"/>
+                           <RadioButton Content="Family"
+                                        GroupName="ContactGroup"
+                                        IsChecked="False"/>
+                          <RadioButton Content="Family"
+                                       GroupName="ContactGroup"
+                                       IsChecked="False"/>
+
+                 </StackPanel>
+                             
 
                   <StackPanel Orientation="Horizontal"
                               HorizontalAlignment="Center"

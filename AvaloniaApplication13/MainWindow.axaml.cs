@@ -26,7 +26,7 @@ namespace AvaloniaApplication13
                 Name = "masha",
                 Surname = "Maskova",
                 Phone = "dfsfs",
-                US
+                UserId = 2,
                 Groups = new List<Group> { family, work }
             };
             var contact2 = new Contact
@@ -34,6 +34,7 @@ namespace AvaloniaApplication13
                 Name = "ivan",
                 Surname = "ivanov",
                 Phone = "fdsfdsfsd",
+                UserId = 3,
                 Groups = new List<Group> { family }
             };
             var context = new DataBase();

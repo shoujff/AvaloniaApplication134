@@ -9,6 +9,7 @@ namespace AvaloniaApplication13.Models
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<Group> Groups { get; set; } = new List<Group>();
        
 
