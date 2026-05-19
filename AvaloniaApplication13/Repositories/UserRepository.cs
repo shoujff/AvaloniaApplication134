@@ -2,6 +2,7 @@
 using AvaloniaApplication13.Data;
 using AvaloniaApplication13.Models;
 using AvaloniaApplication13.Scripts;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AvaloniaApplication13.Repositories
 {
-    public class UserRepository : BaseRepository<User>
+    public class UserRepository 
     {
         private readonly DataBase _db = new DataBase();
 
@@ -42,15 +43,25 @@ namespace AvaloniaApplication13.Repositories
             {
                 return new List<UserWithPhone>();
             }
-             return _db.Users.Join(_db.Contacts,
+             /*return _db.Users.Join(_db.Contacts,
                  user => user.Id == id,
                  contact => contact.UserId == id,
                  (user, contact) => new UserWithPhone
                  {
                      Name = $"{contact.Name} {contact.Surname}",
                      Number = contact.Phone,
-                 }).ToList();
-           
+                 }).ToList();*/
+            return _db.Contacts
+         .Include(c => c.Groups) 
+         .Where(c => c.UserId == id && !c.IsDeleted)
+         .Select(contact => new UserWithPhone
+         {
+             Name = $"{contact.Name} {contact.Surname}",
+             Number = contact.Phone,
+             Groups = contact.Groups.ToList(), 
+             ContactId = contact.Id,
+             contact = contact
+         }).ToList();
         }
 
     }

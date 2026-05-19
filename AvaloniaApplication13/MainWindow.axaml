@@ -13,167 +13,207 @@
         Title="AvaloniaApplication13">
 
     <Window.Styles>
-		<Style Selector="Button">
-			<Setter Property="HorizontalAlignment" Value="Center"/>
+        <Style Selector="Button">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
         <Style Selector="TextBlock.Status">
-			<Setter Property="IsVisible" Value="{Binding StatusVisible}"/>
+            <Setter Property="IsVisible" Value="{Binding StatusVisible}"/>
             <Setter Property="Text" Value="{Binding Status}"/>
         </Style>
         <Style Selector="RadioButton">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-
     </Window.Styles>
-  <Grid ColumnDefinitions="*,*,*"
-        RowDefinitions="*,*,*"
-        ShowGridLines="False">
-      <StackPanel Grid.Row="1" Grid.Column="1"
-                  VerticalAlignment="Center"
-                  IsVisible="{Binding IsLoginVisible}">
-          <Button Content ="blablabal" Click="AddContactClick"/>
-           <TextBox  Watermark="Login"
+
+    <Grid ColumnDefinitions="*,*,*"
+          RowDefinitions="*,*,*"
+          ShowGridLines="False">
+       
+            
+
+    
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding IsLoginVisible}">
+                   <Button Click="Show_Data"/>
+                   <Button Click="Show_All_Groups"/>
+            <Button Content="blablabal" Click="AddContactClick"/>
+            <TextBox Watermark="Login"
                      Text="{Binding Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/> 
-           <TextBox  Watermark="Password"
+            <TextBox Watermark="Password"
                      Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-           <Button Content="Sign in"
-                   Command="{Binding LoginCommand}"
-                   HorizontalAlignment="Stretch"/>
-           <Button Content="Register"
-                  Command="{Binding ShowRegisterCommand}"
-                  HorizontalAlignment="Stretch"/>
-          <TextBlock Classes="Status"/>
-      </StackPanel>
-      <StackPanel Grid.Row="1" Grid.Column="1"
-                  IsVisible="{Binding IsRegisterVisible}">
-           <TextBox  Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            <Button Content="Sign in"
+                    Command="{Binding LoginCommand}"
+                    HorizontalAlignment="Stretch"/>
+            <Button Content="Register"
+                    Command="{Binding ShowRegisterCommand}"
+                    HorizontalAlignment="Stretch"/>
+            <TextBlock Classes="Status"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    IsVisible="{Binding IsRegisterVisible}">
+            <TextBox Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Height="30"
                      Watermark="Name"/>
-           <TextBox Text="{Binding SecondName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Height="30"
-                    Watermark="Surname"/>
-           <TextBox Text="{Binding Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Height="30"
-                    Watermark="Login"/>
-           <TextBox Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Height="30"
-                    Watermark="Password"
-                    PasswordChar="*"/>
-          <Button Content="Register"
-                  Command="{Binding RegisterCommand}"
-                  HorizontalAlignment="Stretch"/>
-          <Button Content="Back"
-                  Command="{Binding BackToLoginCommand}"
-                  HorizontalAlignment="Stretch"/>
-           <TextBlock Classes="Status"/>
-       
-         <TextBox IsVisible="{Binding StatusVisible,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-      </StackPanel >
-      <StackPanel
-            Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3"
-            IsVisible="{Binding IsCabinetVisible}">
-          <DockPanel Margin="10">
-			  <TextBlock Text="Personal account"
-                         FontSize="24"
-                         FontWeight="Bold"
-                         HorizontalAlignment="Center"
-                         DockPanel.Dock="Top"/>
-              <Button Content="Logout"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Top"
-                      Width="80"
-                      Command="{Binding LogoutCommand}"
-                      DockPanel.Dock="Right"/>
-              <TextBlock Text="{Binding FullName}"
-                         FontSize="16"
-                         DockPanel.Dock="Top"/>
-          </DockPanel>
-          <DockPanel Margin="10"
-               LastChildFill="True">
-
-              <StackPanel DockPanel.Dock="Right"
-                          Width="300"
-                          Margin="10,0,0,0">
-                  <TextBlock Text="Add/Edit"
-                             FontSize="18"
-                             FontWeight="SemiBold"
-                             Margin="0,0,0,10"/>
-			      <TextBox Text="{Binding NewContactName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           Watermark="Name"
-                           Margin="0,0,0,10"/>
-                  <TextBox Text="{Binding NewContactSurname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           Watermark="Surname"
-                           Margin="0,0,0,10"/>
-
-                  <TextBox Text="{Binding NewPhoneNumber,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           Watermark="Phone number"
-                            Margin="0,0,0,10"/>
-
-                  <TextBlock Text="Select group"
-                             FontSize="14"
-                             FontWeight="SemiBold"
-                             Margin="0,10,0,5"/>
-                 <StackPanel Orientation="Horizontal"
-                                Margin="0,0,0,10">
-                           <RadioButton Content="Family"
-                                        GroupName="ContactGroup"
-                                        IsChecked="False"/>
-                           <RadioButton Content="Family"
-                                        GroupName="ContactGroup"
-                                        IsChecked="False"/>
-                          <RadioButton Content="Family"
-                                       GroupName="ContactGroup"
-                                       IsChecked="False"/>
-
-                 </StackPanel>
-                             
-
-                  <StackPanel Orientation="Horizontal"
-                              HorizontalAlignment="Center"
-                              Spacing="10">
-					  <Button Content="Add"
-                              Command="{Binding AddContactComand}"/>
-                      <Button Content="Edit"/>
-
-                  </StackPanel>  
-              </StackPanel>
-
-              <StackPanel>
-                    <TextBlock Text="My contacts" 
-                       FontSize="18" 
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,10"/>
-                     <TextBox Watermark="Search by name or phone number" 
-                     Text=""
-                     Margin="0,0,0,10"/>
-                      <ListBox ItemsSource="{Binding Contacts}"
-                     SelectedItem="{Binding SelectedContact}"
-                     Height="300"
-                     Margin="0,0,0,10">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="LightGray" 
-                                BorderThickness="0,0,0,1" 
-                                Padding="5">
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold" 
-                                           Text="{Binding Name}"/>
-                                <TextBlock FontSize="11" 
-                                           Foreground="Gray" 
-                                           Text="{Binding Number}"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-				 <Button Content="Delete selected contact"
-                 Command="{Binding DeleteContactCommand}"
+            <TextBox Text="{Binding SecondName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Height="30"
+                     Watermark="Surname"/>
+            <TextBox Text="{Binding Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Height="30"
+                     Watermark="Login"/>
+            <TextBox Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Height="30"
+                     Watermark="Password"
+                     PasswordChar="*"/>
+            <Button Content="Register"
+                    Command="{Binding RegisterCommand}"
                     HorizontalAlignment="Stretch"/>
-            </StackPanel>
+            <Button Content="Back"
+                    Command="{Binding BackToLoginCommand}"
+                    HorizontalAlignment="Stretch"/>
+            <TextBlock Classes="Status"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3"
+                    IsVisible="{Binding IsCabinetVisible}">
+            <DockPanel Margin="10">
+                <TextBlock Text="Personal account"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           DockPanel.Dock="Top"/>
+                <Button Content="Logout"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Width="80"
+                        Command="{Binding LogoutCommand}"
+                        DockPanel.Dock="Right"/>
+                <TextBlock Text="{Binding FullName}"
+                           FontSize="16"
+                           DockPanel.Dock="Top"/>
+            </DockPanel>
+            
+            <DockPanel Margin="10" LastChildFill="True">
+                <StackPanel DockPanel.Dock="Right"
+                            Width="300"
+                            Margin="10,0,0,0">
+                    <Border>
+                        <StackPanel>
+                            <TextBlock Text="Add/Edit"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+                            <TextBox Text="{Binding NewContactName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Watermark="Name"
+                                     Margin="0,0,0,10"/>
+                            <TextBox Text="{Binding NewContactSurname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Watermark="Surname"
+                                     Margin="0,0,0,10"/>
+                            <TextBox Text="{Binding NewPhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Watermark="Phone number"
+                                     Margin="0,0,0,10"/>
+                            <TextBlock Text="Select groups for contact"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,10,0,5"/>
+                            <Border CornerRadius="5" Padding="5">
+                                <ScrollViewer>
+                                    <ListBox ItemsSource="{Binding SelectedGroupsForNewContact}"
+                                    SelectionMode="Multiple"
+                                    MaxHeight="150"
+                                    Margin="0,0,0,10">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding Name}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Foreground="White"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    </ScrollViewer>
+                                
+                            </Border>
+                            <Button Content="Add Contact"
+                                    Command="{Binding AddContactComand}"/>
+                        </StackPanel>
+                    </Border>
 
-          </DockPanel>
-      </StackPanel>
+                    <Border BorderBrush="White" 
+                            BorderThickness="1" 
+                            CornerRadius="5" 
+                            Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Add/Remove Groups"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="Current:"
+                                       FontSize="12"
+                                       Foreground="Gray"
+                                       Margin="0,0,0,5"/>
+                                       <ScrollViewer>
+                           <ListBox ItemsSource="{Binding SelectedContact.Groups}"
+                                    MaxHeight="150"
+                                    Margin="0,0,0,15">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="Black"
+                                                CornerRadius="3"
+                                                Padding="8,4"
+                                                Margin="2">
+                                                <TextBlock Text="{Binding Name}"
+                                                       Foreground="White"
+                                                       FontSize="12"
+                                                       HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                               
+                           </ListBox>
+                           </ScrollViewer>
 
-  </Grid>
+
+                                
+                            
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                
+                <StackPanel>
+                    <TextBlock Text="My contacts" 
+                               FontSize="18" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+
+
+                              
+                                   
+                              
+                   
+                    <ListBox ItemsSource="{Binding Contacts}"
+                             SelectedItem="{Binding SelectedContact}"
+                             Height="300"
+                             Margin="0,0,0,10">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="LightGray" 
+                                        BorderThickness="0,0,0,1" 
+                                        Padding="5">
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold" 
+                                                   Text="{Binding Name}"/>
+                                        <TextBlock FontSize="11" 
+                                                   Foreground="Gray" 
+                                                   Text="{Binding Number}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
+    </Grid>
 </Window>

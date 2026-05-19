@@ -18,14 +18,33 @@ namespace AvaloniaApplication13.ViewModels
     public class MainViewModel : INotifyPropertyChanged
 
     {
-        private List<UserWithPhone> _contacts = new List<UserWithPhone>();
+        public MainViewModel()
+        {
+            _contactRepository = new ContactRepository();
+            userRepository = new UserRepository();
+            _groupRepository = new GroupRepository("Server=(localdb)\\mssqllocaldb;Database=users;Trusted_Connection=True");
+           
+            LoadGroups();
+            LoginCommand = new RelayCommand(OnLogin, () => CanLogin);
+            RegisterCommand = new RelayCommand(OnRegister, () => CanRegister());
+            ShowRegisterCommand = new RelayCommand(OnShowRegister);
+            BackToLoginCommand = new RelayCommand(OnBackToLogin);
+            LogoutCommand = new RelayCommand(OnLogout);
 
+            AddContactComand = new RelayCommand(OnAddContact);
+        }
+
+        private List<UserWithPhone> _contacts = new List<UserWithPhone>();
+        private List<UserWithPhone> _allContacts = new List<UserWithPhone>();
+
+        private readonly GroupRepository _groupRepository;
         private readonly UserRepository userRepository;
         private readonly ContactRepository _contactRepository;
 
         private UserWithPhone _selectedContact;
-
         private int _currentUserId;
+
+
         private string _firstName = "";
         private string _secondName = "";
         private string login = "";
@@ -39,6 +58,56 @@ namespace AvaloniaApplication13.ViewModels
         private string _newContactName = "";
         private string _newPhoneNumber = "";
         private string _newContactSurname = "";
+
+
+
+        private ObservableCollection<Group> _allGroups = new ObservableCollection<Group>();
+        private ObservableCollection<Group> _selectedGroupsForNewContact = new ObservableCollection<Group>();
+        private Group _selectedGroupToAdd;
+        private Group _selectedGroupToRemove;
+        public List<string> GroupFilters { get; set; }
+
+
+        public ObservableCollection<Group> SelectedGroupsForNewContact
+        {
+            get => _selectedGroupsForNewContact;
+            set
+            {
+                _selectedGroupsForNewContact = value;
+                OnPropertyChanged();
+            }
+        }
+        public Group SelectedGroupToAdd
+        {
+            get => _selectedGroupToAdd;
+            set
+            {
+                _selectedGroupToAdd = value;
+                OnPropertyChanged();
+              
+            }
+        }
+
+        public Group SelectedGroupToRemove
+        {
+            get => _selectedGroupToRemove;
+            set
+            {
+                _selectedGroupToRemove = value;
+                OnPropertyChanged();
+                
+            }
+        }
+        public ObservableCollection<Group> AllGroups
+        {
+            get => _allGroups;
+            set
+            {
+                _allGroups = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string NewContactSurname
         {
             get => _newContactSurname;
@@ -57,7 +126,7 @@ namespace AvaloniaApplication13.ViewModels
             {
                 _selectedContact = value;
                 OnPropertyChanged();
-                (DeleteContactCommand as RelayCommand)?.RaiseCanExecuteChanged();
+
             }
         }
         public string NewPhoneNumber
@@ -205,19 +274,9 @@ namespace AvaloniaApplication13.ViewModels
         public RelayCommand BackToLoginCommand { get; }
         public RelayCommand LogoutCommand { get; }
         public RelayCommand AddContactComand { get; }
-        public MainViewModel()
-        {
-            _contactRepository = new ContactRepository();
-            userRepository = new UserRepository();
+        public RelayCommand AddGroupToContactCommand { get; }
+        public RelayCommand RemoveGroupFromContactCommand { get; }
 
-            LoginCommand = new RelayCommand(OnLogin, () => CanLogin);
-            RegisterCommand = new RelayCommand(OnRegister, () => CanRegister());
-            ShowRegisterCommand = new RelayCommand(OnShowRegister);
-            BackToLoginCommand = new RelayCommand(OnBackToLogin);
-            LogoutCommand = new RelayCommand(OnLogout);
-            DeleteContactCommand = new RelayCommand(OnDeleteContact, () => SelectedContact != null);
-            AddContactComand = new RelayCommand(OnAddContact);
-        }
         public void OnLogin()
         {
             var user = userRepository.Login(Login, Password);
@@ -241,6 +300,7 @@ namespace AvaloniaApplication13.ViewModels
         }
         public void OnRegister()
         {
+            
             var newUser = new User
             {
                 Name = FirstName,
@@ -261,17 +321,29 @@ namespace AvaloniaApplication13.ViewModels
         }
         public void OnAddContact()
         {
+            var selectedGroups = SelectedGroupsForNewContact.Where(g=> g.IsSelected).ToList();
             var contact = new Contact
             {
-                Name = NewContactName,   
+                Name = NewContactName,
                 Surname = NewContactSurname,
-                Phone = NewPhoneNumber,     
-                UserId = _currentUserId
+                Phone = NewPhoneNumber,
+                UserId = _currentUserId,
+                IsDeleted = false,
+                Groups = selectedGroups
             };
-            _contactRepository.AddContact(contact);
-            Contacts = userRepository.GetContacts(_currentUserId);
+            var addedContact = _contactRepository.AddContact(contact);
+            if(selectedGroups.Any())
+            {
+                _contactRepository.UpdateContactGroups(addedContact.Id, selectedGroups.Select(g=> g.Id).ToList());
+            }
+            LoadContacts();
+            
             NewContactName = "";
             NewPhoneNumber = "";
+            foreach (var group in SelectedGroupsForNewContact)
+            {
+                group.IsSelected = false;
+            }
 
             Status = "Контакт успешно добавлен";
             StatusVisible = true;
@@ -311,27 +383,41 @@ namespace AvaloniaApplication13.ViewModels
             IsCabinetVisible = false;
 
         }
-        private void AddTestContacts(int userid)
+        private void LoadContacts()
         {
+            _allContacts = userRepository.GetContacts(_currentUserId);
+            Contacts = _allContacts.ToList();
 
-            List<Contact> testContacts = new List<Contact>
-            {
-        new Contact { UserId = userid, Phone = "+767" },
-        new Contact { UserId = userid, Phone = "+78" },
-        new Contact { UserId = userid, Phone = "+89" }
-    };
-            foreach (var contact in testContacts)
-            {
-                _contactRepository.AddContact(contact);
-            }
-            OnPropertyChanged(nameof(Contacts));
         }
-        public RelayCommand DeleteContactCommand { get; }
-        private void OnDeleteContact()
+
+        private void LoadGroups()
         {
-            if (SelectedContact != null)
+            var groups = _groupRepository.GetAllGroups();
+            if (!groups.Any())
             {
-                _contactRepository.DleteContactByPhone(SelectedContact.Number, _currentUserId);
+                var defaultGroups = new[] { "Семья", "Работа", "Друзья" };
+                foreach (var groupName in defaultGroups)
+                {
+                    _groupRepository.AddGroup(new Group { Name = groupName });
+                }
+                groups = _groupRepository.GetAllGroups();
+
+            }
+            AllGroups.Clear();
+            foreach (var group in groups)
+            {
+                AllGroups.Add(group);
+            }
+            SelectedGroupsForNewContact.Clear();
+            foreach (var group in AllGroups)
+            {
+                var groupCopy = new Group
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    IsSelected = false
+                };
+                SelectedGroupsForNewContact.Add(groupCopy);
             }
 
         }

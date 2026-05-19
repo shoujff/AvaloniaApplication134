@@ -1,5 +1,6 @@
 ﻿using AvaloniaApplication13.Data;
 using AvaloniaApplication13.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,24 +19,68 @@ namespace AvaloniaApplication13.Repositories
         }
         public Contact AddContact(Contact contact)
         {
-            _db.Contacts.Add(contact);
-            _db.SaveChanges();
+            if(contact.Groups !=null && contact.Groups.Any())
+            {
+                var groups = contact.Groups.ToList();
+                contact.Groups.Clear();
+                _db.Contacts.Add(contact);
+                _db.SaveChanges();
+                foreach (var group in groups)
+                {
+                    var existingGroup = _db.Groups.Find(group.Id);
+                    if (existingGroup != null)
+                    {
+                        contact.Groups.Add(existingGroup);
+                    }
+                }
+                _db.SaveChanges();
+            } 
+            
             return contact;
         }
-        public void DleteContactByPhone(string phone, int userId)
+        public Contact AddContactWithGroup(Contact contact,List<int> groupIds) 
         {
-            var contact = _db.Contacts.FirstOrDefault(c => c.Phone == phone && c.UserId == userId);
-            if (contact != null)
+           
+            _db.Contacts.Add(contact);
+            _db.SaveChanges();
+            foreach (var groupId in groupIds)
             {
-                _db.Contacts.Remove(contact);
+                var group = _db.Groups.Find(groupId);
+                if (group != null)
+                {
+                    contact.Groups.Add(group);
+                }
+            }
+            _db.SaveChanges(); 
+            return contact;
+
+        }
+        public void UpdateContactGroups(int contactId, List<int> groupIds)
+        {
+            var contact = _db.Contacts.Include(c => c.Groups).FirstOrDefault(c => c.Id == contactId);
+
+            if(contact != null)
+            {
+                contact.Groups.Clear();
+                foreach (var groupId in groupIds)
+                {
+                    var group = _db.Groups.Find(groupId);
+                    if (group != null)
+                    {
+                        contact.Groups.Add(group);
+                    }
+                }
                 _db.SaveChanges();
             }
         }
+
+
         public Contact DeleteContact(Contact contact)
         {
             _db.Contacts.Remove(contact);
             _db.SaveChanges();
             return contact;
         }
+        
     }
 }
