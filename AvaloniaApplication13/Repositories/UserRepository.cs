@@ -32,12 +32,12 @@ namespace AvaloniaApplication13.Repositories
             _db.SaveChanges();
             return user;
         }
-        public User Login(string username, string password)
+        public async Task<User>Login(string username, string password)
         {
             var hash = PasswordHelper.Hash(password);
-            return _db.Users.FirstOrDefault(u => u.Login == username && u.Password == hash);
+            return await _db.Users.FirstOrDefaultAsync(u => u.Login == username && u.Password == hash);
         }
-        public List<UserWithPhone> GetContacts(int id)
+        public async Task< List<UserWithPhone>> GetContacts(int id)
         {
             if (id <= 0)
             {
@@ -51,7 +51,7 @@ namespace AvaloniaApplication13.Repositories
                      Name = $"{contact.Name} {contact.Surname}",
                      Number = contact.Phone,
                  }).ToList();*/
-            return _db.Contacts
+            return await _db.Contacts
          .Include(c => c.Groups) 
          .Where(c => c.UserId == id && !c.IsDeleted)
          .Select(contact => new UserWithPhone
@@ -59,6 +59,32 @@ namespace AvaloniaApplication13.Repositories
              Name = $"{contact.Name} {contact.Surname}",
              Number = contact.Phone,
              Groups = contact.Groups.ToList(), 
+             ContactId = contact.Id,
+             contact = contact
+         }).ToListAsync();
+        }
+        public  List<UserWithPhone> GetContactsA(int id)
+        {
+            if (id <= 0)
+            {
+                return new List<UserWithPhone>();
+            }
+            /*return _db.Users.Join(_db.Contacts,
+                user => user.Id == id,
+                contact => contact.UserId == id,
+                (user, contact) => new UserWithPhone
+                {
+                    Name = $"{contact.Name} {contact.Surname}",
+                    Number = contact.Phone,
+                }).ToList();*/
+            return  _db.Contacts
+         .Include(c => c.Groups)
+         .Where(c => c.UserId == id && !c.IsDeleted)
+         .Select(contact => new UserWithPhone
+         {
+             Name = $"{contact.Name} {contact.Surname}",
+             Number = contact.Phone,
+             Groups = contact.Groups.ToList(),
              ContactId = contact.Id,
              contact = contact
          }).ToList();
