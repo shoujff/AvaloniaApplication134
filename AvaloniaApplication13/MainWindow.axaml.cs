@@ -47,8 +47,16 @@ namespace AvaloniaApplication13
             context.SaveChanges();
 
         }
-        
-            public void Show_Data(object sender, RoutedEventArgs e)
+        public void Load(object sender, RoutedEventArgs eventArgs)
+        {
+            MainViewModel vm = new MainViewModel();
+            vm.LoadContacts();
+               vm.FilterContactsByGroup();
+            Debug.WriteLine($" ÓÌÚ‡ÍÚ ID");
+
+        }
+
+        public void Show_Data(object sender, RoutedEventArgs e)
         {
             var context = new DataBase();
 
@@ -91,6 +99,10 @@ namespace AvaloniaApplication13
             }
 
             Debug.WriteLine("==========  ŒÕ≈÷ —œ»— ¿ ==========\n");
+        }
+        private void AddGroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as MainViewModel).IsGroupsVisible = true;
         }
     }
 }
