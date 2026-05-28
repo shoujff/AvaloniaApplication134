@@ -1,18 +1,19 @@
-﻿using AvaloniaApplication13.Commands;
+﻿using Avalonia.Controls;
+using AvaloniaApplication13.Commands;
+using AvaloniaApplication13.Data;
+using AvaloniaApplication13.Models;
 using AvaloniaApplication13.Repositories;
+using AvaloniaApplication13.Scripts;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using AvaloniaApplication13.Models;
-using AvaloniaApplication13.Data;
-using AvaloniaApplication13.Scripts;
-using System.Collections.ObjectModel;
-using Microsoft.Identity.Client;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace AvaloniaApplication13.ViewModels
 {
@@ -36,8 +37,10 @@ namespace AvaloniaApplication13.ViewModels
             ShowAddGroupCommand = new RelayCommand(OnShowAddGroup);
             AddGroupCommand = new RelayCommand(OnAddGroup, () => CanAddGroup);
             CancelAddGroupCommand = new RelayCommand(OnCancelAddGroup);
-
+            AddGroupToContactCommand = new RelayCommand(OnAddGroupToContactCommand);
             FilterByGroupCommand = new RelayCommand<Group>(OnFilterByGroup);
+            OpenTrashCommand = new RelayCommand(OnOpenTrash);
+            DeleteCommand = new RelayCommand(OnDelete, ()=> SelectedContact !=null);
             LoadGroups();
         }
 
@@ -341,19 +344,45 @@ namespace AvaloniaApplication13.ViewModels
         public RelayCommand BackToLoginCommand { get; }
         public RelayCommand LogoutCommand { get; }
         public RelayCommand AddContactComand { get; }
-        public RelayCommand AddGroupToContactCommand { get; }
-        public RelayCommand RemoveGroupFromContactCommand { get; }
+        public RelayCommand AddGroupToContactCommand { get; }      
         public RelayCommand ShowOrHideGroups { get; }
         public bool CanAddGroup => !string.IsNullOrWhiteSpace(NewGroupName);
 
         public RelayCommand ShowAddGroupCommand { get; }
         public RelayCommand AddGroupCommand { get; }
         public RelayCommand CancelAddGroupCommand { get; }
+        public RelayCommand OpenTrashCommand { get; }
+        public RelayCommand DeleteCommand { get; }
         public void OnShowOrHideGroups()
         {
 
             IsGroupsVisible = true;
 
+        }
+        public void OnDelete()
+        {
+            if(SelectedContact != null)
+            {
+                _contactRepository.SoftDeleteContact(SelectedContact.ContactId);
+
+               
+                LoadContacts();
+            }
+        }
+        public void OnAddGroupToContactCommand()
+        {
+            if (SelectedContact != null && SelectedGroupToAdd != null)
+            {
+                _groupRepository.AddContactToGroup(SelectedContact.ContactId,SelectedGroupToAdd.Id);
+
+                var updatedContact = _contactRepository.GetContactById(SelectedContact.ContactId);
+                if (updatedContact != null)
+                {
+                    SelectedContact.Groups = updatedContact.Groups;
+                }
+                LoadContacts();
+         
+            }
         }
         public async void OnLogin()
         {
@@ -605,22 +634,30 @@ namespace AvaloniaApplication13.ViewModels
 
 
         }
-    
-
     private void OnAddGroup()
         {
             if (string.IsNullOrWhiteSpace(NewGroupName)) return;
-
             var newGroup = new Group { Name = NewGroupName };
-            _groupRepository.AddGroup(newGroup);
-
-          
+            _groupRepository.AddGroup(newGroup);        
             LoadGroups();
-
             IsAddGroupVisible = false;
-            NewGroupName = "";
-
-          
+            NewGroupName = "";      
         }
+        private async void OnOpenTrash()
+        {
+            var trashViewModel = new TrashViewModel(_currentUserId);
+            var trashWindow = new TrashWindow();
+            trashWindow.DataContext = trashViewModel;
+            await trashWindow.ShowDialog(GetWindow());
+        }
+        private Window GetWindow()
+        {
+            return Avalonia.Application.Current?.ApplicationLifetime
+                is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
+        }
+
     }
+
 }

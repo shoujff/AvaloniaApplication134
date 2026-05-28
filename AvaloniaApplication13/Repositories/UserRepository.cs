@@ -43,14 +43,7 @@ namespace AvaloniaApplication13.Repositories
             {
                 return new List<UserWithPhone>();
             }
-             /*return _db.Users.Join(_db.Contacts,
-                 user => user.Id == id,
-                 contact => contact.UserId == id,
-                 (user, contact) => new UserWithPhone
-                 {
-                     Name = $"{contact.Name} {contact.Surname}",
-                     Number = contact.Phone,
-                 }).ToList();*/
+            
             return await _db.Contacts
          .Include(c => c.Groups) 
          .Where(c => c.UserId == id && !c.IsDeleted)
@@ -69,17 +62,29 @@ namespace AvaloniaApplication13.Repositories
             {
                 return new List<UserWithPhone>();
             }
-            /*return _db.Users.Join(_db.Contacts,
-                user => user.Id == id,
-                contact => contact.UserId == id,
-                (user, contact) => new UserWithPhone
-                {
-                    Name = $"{contact.Name} {contact.Surname}",
-                    Number = contact.Phone,
-                }).ToList();*/
+           
             return  _db.Contacts
          .Include(c => c.Groups)
          .Where(c => c.UserId == id && !c.IsDeleted)
+         .Select(contact => new UserWithPhone
+         {
+             Name = $"{contact.Name} {contact.Surname}",
+             Number = contact.Phone,
+             Groups = contact.Groups.ToList(),
+             ContactId = contact.Id,
+             contact = contact
+         }).ToList();
+        }
+        public List<UserWithPhone> GetTrashedContacts(int id)
+        {
+            if (id <= 0)
+            {
+                return new List<UserWithPhone>();
+            }
+
+            return _db.Contacts
+           .Include(c => c.Groups)
+         .Where(c => c.UserId == id && c.IsDeleted)
          .Select(contact => new UserWithPhone
          {
              Name = $"{contact.Name} {contact.Surname}",

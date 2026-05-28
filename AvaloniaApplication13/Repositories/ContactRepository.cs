@@ -73,14 +73,60 @@ namespace AvaloniaApplication13.Repositories
                 _db.SaveChanges();
             }
         }
-
-
-        public Contact DeleteContact(Contact contact)
+        public int ClearTrash(int userId)
         {
-            _db.Contacts.Remove(contact);
+            var deletedContacts = _db.Contacts
+                .Where(c => c.UserId == userId && c.IsDeleted)
+                .ToList();
+
+            _db.Contacts.RemoveRange(deletedContacts);
             _db.SaveChanges();
-            return contact;
+            return deletedContacts.Count;
+        }
+
+
+
+        public bool SoftDeleteContact(int contactId)
+        {
+            var contact = GetContactById(contactId);
+            if (contact != null && !contact.IsDeleted)
+            {
+                contact.IsDeleted = true;
+                _db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool RestoreContact(int contactId)
+        {
+            var contact = GetContactById(contactId);
+            if (contact != null && contact.IsDeleted)
+            {
+                contact.IsDeleted = false;
+                _db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+        public bool PermanentDeleteContact(int contactId)
+        {
+            var contact = GetContactById(contactId);
+            if (contact != null)
+            {
+                _db.Contacts.Remove(contact);
+                _db.SaveChanges();
+                return true;
+            }
+            return false;
         }
         
+        public Contact GetContactById(int id)
+        {
+            return _db.Contacts
+                .Include(c => c.Groups)
+                .FirstOrDefault(c => c.Id == id);
+        }
+
     }
 }

@@ -46,6 +46,7 @@ namespace AvaloniaApplication13.Repositories
             }
 
         }
+        
         public void RemoveContactFromGroup(int contactId, int groupId)
         {
             var contact = _db.Contacts

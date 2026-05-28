@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:vm="clr-namespace:AvaloniaApplication13.ViewModels"
+        x:Class="AvaloniaApplication13.TrashWindow"
+		x:DataType="vm:TrashViewModel"
+        Title="TrashWindow">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+
+		<Border Grid.Row="0">
+			<TextBlock Text="Trash" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+		</Border>
+
+
+		<StackPanel Grid.Row="1" Margin="10">
+			<TextBlock Text="Deleted Contacts" FontSize="16" Foreground="White" Margin="0,0,0,10"/>
+
+			<ListBox ItemsSource="{Binding DeletedContacts}" SelectedItem="{Binding SelectedContact}" MaxHeight="350" Margin="0,0,0,10">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Border Padding="10">
+							<StackPanel>
+								<TextBlock FontWeight="Bold" Foreground="White" FontSize="14" Text="{Binding Name}"/>
+								<TextBlock FontSize="11"  Text="{Binding Number}"/>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+			
+		</StackPanel>
+
+
+		<Border Grid.Row="2" Background="#343A40" Padding="10" CornerRadius="0,0,5,5">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button Content="Restore" Command="{Binding RestoreContactCommand}"  Foreground="White" MinWidth="100" Margin="5"/>
+				<Button Content="Delete" Command="{Binding PermanentDeleteCommand}"  Foreground="White" MinWidth="100" Margin="5"/>
+				<Button Content="Trash all" Command="{Binding ClearAllTrashCommand}"  Foreground="White" MinWidth="100" Margin="5"/>
+				<Button Content="Close" Command="{Binding CloseCommand}"  Foreground="White" MinWidth="100" Margin="5" Click="OnCloseClick"/>
+			</StackPanel>
+		</Border>
+	</Grid>
+</Window>

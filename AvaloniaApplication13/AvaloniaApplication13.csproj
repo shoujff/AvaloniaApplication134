@@ -25,4 +25,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
